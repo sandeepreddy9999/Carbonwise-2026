@@ -24,7 +24,7 @@ CarbonWise helps individuals **understand**, **track**, and **reduce** their per
 
 ## 🚀 Live Demo
 
-**[https://sandeepreddy9999.github.io/carbonwise-/](https://sandeepreddy9999.github.io/carbonwise-/)**
+**[https://sandeepreddy9999.github.io/carbonwise-/](https://sandeepreddy9999.github.io/Carbonwise-2026/)**
 
 ## 🛠️ Tech Stack
 
