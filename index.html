@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>CarbonWise — Deep Space Carbon Intelligence</title>
+<meta name="description" content="CarbonWise: Mission-control grade carbon footprint tracking with AI-powered planetary intelligence.">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; connect-src 'self' https://generativelanguage.googleapis.com;">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- NEBULAS -->
+<div class="nebula nebula-1"></div>
+<div class="nebula nebula-2"></div>
+<div class="nebula nebula-3"></div>
+
+<!-- INTRO -->
+<div id="intro" aria-label="Intro Animation">
+  <button id="skipBtn" aria-label="Skip Intro">Skip →</button>
+  <div class="intro-plant" id="introPlant">
+    <div class="intro-glow"></div>
+    <div class="seed"></div>
+    <div class="stem"></div>
+    <svg class="leaf-svg leaf-left" viewBox="0 0 120 70">
+      <defs><linearGradient id="lg1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00D4FF"/><stop offset="50%" stop-color="#40E8FF"/><stop offset="100%" stop-color="#0097B8"/></linearGradient></defs>
+      <path d="M120,35 Q90,0 0,35 Q90,70 120,35Z" fill="none" stroke="url(#lg1)" stroke-width="2"/>
+      <path d="M120,35 Q60,30 20,35" stroke="#00D4FF" stroke-width="1" fill="none" opacity=".5"/>
+      <path d="M100,35 Q70,20 40,28" stroke="#40E8FF" stroke-width=".8" fill="none" opacity=".4"/>
+      <path d="M100,35 Q70,50 40,42" stroke="#40E8FF" stroke-width=".8" fill="none" opacity=".4"/>
+    </svg>
+    <svg class="leaf-svg leaf-right" viewBox="0 0 100 60">
+      <path d="M0,30 Q30,0 100,30 Q30,60 0,30Z" fill="none" stroke="url(#lg1)" stroke-width="2"/>
+      <path d="M0,30 Q50,25 80,30" stroke="#00D4FF" stroke-width="1" fill="none" opacity=".5"/>
+    </svg>
+    <svg class="leaf-svg leaf-top" viewBox="0 0 60 90">
+      <path d="M30,90 Q0,45 30,0 Q60,45 30,90Z" fill="none" stroke="url(#lg1)" stroke-width="2"/>
+      <path d="M30,90 Q28,50 30,10" stroke="#00D4FF" stroke-width="1" fill="none" opacity=".5"/>
+    </svg>
+  </div>
+  <div class="intro-text" id="introText">
+    <div class="t1">CARBON</div>
+    <div class="line"></div>
+    <div class="t2">WISE</div>
+  </div>
+  <div class="intro-tagline"><span>Understand.</span><span>Track.</span><span>Reduce.</span></div>
+</div>
+
+<!-- APP -->
+<div id="app">
+<canvas id="starCanvas" style="position:fixed;inset:0;z-index:0;pointer-events:none"></canvas>
+<div id="cursorGlow" style="position:fixed;inset:0;z-index:1;pointer-events:none"></div>
+<div id="toastBox" role="alert" aria-live="assertive"></div>
+
+<!-- MODAL -->
+<div class="modal-bg closed" id="shareModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <div class="modal-title" id="modalTitle">🌍 CarbonWise Report</div>
+    <div class="modal-date mono" id="modalDate"></div>
+    <div class="modal-divider"></div>
+    <div class="modal-row"><span class="lbl">Today</span><span class="val" id="mToday">0.00 kg</span></div>
+    <div class="modal-row"><span class="lbl">Carbon Grade</span><span class="val" id="mGrade">—</span></div>
+    <div class="modal-row"><span class="lbl">Impact Score</span><span class="val" id="mScore">—/100</span></div>
+    <div class="modal-row"><span class="lbl">vs Global Avg</span><span class="val" id="mVsAvg">—</span></div>
+    <div class="modal-row"><span class="lbl">Actions Adopted</span><span class="val" id="mAdopt">—/12</span></div>
+    <div class="modal-divider"></div>
+    <div class="modal-powered">Powered by CarbonWise · carbonwise.app</div>
+    <div class="modal-btns"><button class="btn-p" id="btnCopy">📋 Copy as Text</button><button class="btn-g" id="btnModalClose">✕ Close</button></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-logo" id="navLogo">
+    <svg width="22" height="28" viewBox="0 0 60 90" fill="none"><path d="M30,90 Q0,45 30,0 Q60,45 30,90Z" stroke="#00D4FF" stroke-width="3" fill="none"/><path d="M30,90 Q5,55 15,25" stroke="#40E8FF" stroke-width="1.5" fill="none" opacity=".6"/></svg>
+    <span>Carbon<span class="cw">Wise</span></span>
+  </div>
+  <div class="nav-right">
+    <span class="nav-clock mono" id="navClock">00:00:00</span>
+    <div class="pulse-dot"></div>
+    <span class="nav-live">LIVE</span>
+    <div class="nav-sep"></div>
+    <div class="nav-avatar">S</div>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-label"><div class="pulse-dot"></div><span>LIVE DATA</span></div>
+  <div class="ticker-track"><div class="ticker-inner" id="tickerInner"></div></div>
+</div>
+
+<!-- BOTTOM NAV DOCK -->
+<div class="bottom-nav" id="navPills">
+  <div class="bottom-nav-inner">
+    <div class="nav-slider" id="navSlider"></div>
+    <button class="nav-btn active" data-tab="dashboard" aria-label="Dashboard Tab">
+      <span class="bn-icon">📊</span>
+      <span class="bn-lbl">Dashboard</span>
+    </button>
+    <button class="nav-btn" data-tab="calculator" aria-label="Calculator Tab">
+      <span class="bn-icon">🧮</span>
+      <span class="bn-lbl">Calculator</span>
+    </button>
+    <button class="nav-btn" data-tab="insights" aria-label="Insights Tab">
+      <span class="bn-icon">🤖</span>
+      <span class="bn-lbl">Insights</span>
+    </button>
+    <button class="nav-btn" data-tab="tips" aria-label="Tips Tab">
+      <span class="bn-icon">🎯</span>
+      <span class="bn-lbl">Tips</span>
+    </button>
+    <button class="nav-btn" data-tab="learn" aria-label="Learn Tab">
+      <span class="bn-icon">📚</span>
+      <span class="bn-lbl">Learn</span>
+    </button>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- ═══ DASHBOARD ═══ -->
+<section class="tab active" id="tab-dashboard">
+  <!-- HERO -->
+  <div class="hero" style="overflow:hidden">
+    <div class="scan-line" id="scanLine"></div>
+    <div>
+      <div class="hero-pre" style="justify-content:space-between;flex-wrap:wrap;gap:10px">
+        <div style="display:flex;align-items:center;gap:12px"><div class="hero-line"></div><span class="micro" style="color:var(--cyan)">TODAY'S CARBON OVERVIEW</span></div>
+        <button class="btn-s" id="btnShare" style="padding:6px 14px;font-size:11px">📤 Share Report</button>
+      </div>
+      <h1 class="hero-h1" id="greeting"><em>Good</em> morning.</h1>
+      <p class="hero-sub">Your choices are shaping the planet.</p>
+      <div class="hero-date mono" id="dateStr"></div>
+    </div>
+    <div class="hero-gauge" role="meter" aria-label="Daily Carbon Emissions Meter" aria-valuemin="0" aria-valuemax="27">
+      <div class="gauge-wrap" style="margin:0 auto;position:relative">
+        <div class="gauge-glow" id="gaugeGlow" style="background:radial-gradient(circle,rgba(0,212,255,0.12),transparent 70%)"></div>
+        <svg class="gauge-svg" viewBox="0 0 240 240" style="overflow:visible">
+          <defs><linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%"><stop offset="0%" stop-color="#00FF88"/><stop offset="35%" stop-color="#00D4FF"/><stop offset="65%" stop-color="#F59E0B"/><stop offset="100%" stop-color="#FF0080"/></linearGradient></defs>
+          <g id="gTicks"></g>
+          <!-- Outer ring -->
+          <circle cx="120" cy="120" r="115" fill="none" stroke="rgba(0,212,255,0.06)" stroke-width="1"/>
+          <!-- Track -->
+          <circle cx="120" cy="120" r="96" fill="none" stroke="rgba(0,212,255,0.08)" stroke-width="12" stroke-dasharray="452 603" transform="rotate(135 120 120)" stroke-linecap="round"/>
+          <!-- Fill arc -->
+          <circle id="gArc" cx="120" cy="120" r="96" fill="none" stroke="url(#gaugeGrad)" stroke-width="12" stroke-dasharray="0 603" transform="rotate(135 120 120)" stroke-linecap="round" style="transition:stroke-dasharray 1.8s var(--ease-out);filter:drop-shadow(0 0 6px rgba(0,212,255,0.4))"/>
+          <!-- Needle -->
+          <g id="gNeedle" style="transform-origin:120px 120px;transform:rotate(135deg);transition:transform 1.0s cubic-bezier(0.34,1.56,0.64,1)">
+            <line x1="120" y1="120" x2="120" y2="46" stroke="#40E8FF" stroke-width="2" stroke-linecap="round"/>
+            <rect x="117" y="44" width="6" height="6" rx="1" fill="#40E8FF" transform="rotate(45 120 47)"/>
+            <circle cx="120" cy="120" r="5" fill="#03030F" stroke="#00D4FF" stroke-width="2"/>
+          </g>
+        </svg>
+        <div class="gauge-center">
+          <div class="gauge-val orb" id="gVal">0.00</div>
+          <div class="gauge-unit mono" style="margin-top:2px">kg CO₂</div>
+          <div class="gauge-today micro" style="margin-top:5px">TODAY</div>
+        </div>
+      </div>
+      <div class="gauge-vs mono" id="gVs" style="text-align:center;margin-top:10px;font-size:12px"></div>
+      <!-- Score badge under gauge -->
+      <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:10px">
+        <svg width="36" height="36" viewBox="0 0 100 100" style="transform:rotate(-90deg);flex-shrink:0"><circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,212,255,0.08)" stroke-width="8"/><circle id="scoreRing" cx="50" cy="50" r="44" fill="none" stroke="var(--cyan)" stroke-width="8" stroke-linecap="round" stroke-dasharray="276" stroke-dashoffset="276" style="transition:stroke-dashoffset .9s var(--ease-out),stroke .3s"/></svg>
+        <div style="text-align:left;line-height:1.3">
+          <div style="font:600 9px 'Space Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted)">IMPACT SCORE</div>
+          <div class="orb" id="sScore" style="font-size:22px;font-weight:900;color:var(--cyan);text-shadow:0 0 20px rgba(0,212,255,0.4)">100</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHT STRIP -->
+  <div class="card insight-strip" id="insightStrip">
+    <div class="is-left"><span style="font-size:18px">💡</span><strong>Quick Insight</strong></div>
+    <div class="is-msg" id="insightMsg">No activities logged yet — you're starting fresh today!</div>
+    <button class="btn-s" style="padding:6px 14px;font-size:11px" onclick="switchTab('tips')">See Tips →</button>
+  </div>
+
+  <!-- TODAY VS YESTERDAY -->
+  <div class="card vs-bar-card" id="vsBarCard">
+    <div class="vs-row">
+      <div class="vs-lbl micro">TODAY</div>
+      <div class="vs-track"><div class="vs-fill vs-fill-today" id="vsFillToday"></div></div>
+      <div class="vs-num mono" id="vsTodayNum">0.00 kg</div>
+    </div>
+    <div class="vs-row">
+      <div class="vs-lbl micro">YESTERDAY</div>
+      <div class="vs-track"><div class="vs-fill vs-fill-yest" id="vsFillYest"></div></div>
+      <div class="vs-num mono" id="vsYestNum">0.00 kg</div>
+      <div class="vs-delta up" id="vsDelta" style="display:none"></div>
+    </div>
+  </div>
+
+  <!-- STAT CARDS (4 cards) -->
+  <div class="stats-row" id="statsRow">
+    <div class="card stat-card"><span class="sc-icon">🌍</span><span class="sc-micro">Daily CO₂</span><span class="sc-val orb" id="sDaily" style="color:var(--cyan)">0.00</span><div class="sc-bar"><div class="sc-bar-fill" id="sDailyBar" style="width:0%;background:var(--cyan)"></div></div><span class="sc-sub mono">of 27 kg max</span></div>
+    <div class="card stat-card"><span class="sc-icon">⚖️</span><span class="sc-micro">vs Global Avg</span><span class="sc-val orb" id="sVs" style="color:var(--green-signal)">−13.50</span><span class="sc-sub mono">avg 13.5 kg/day</span></div>
+    <div class="card stat-card"><span class="sc-icon">📈</span><span class="sc-micro">7-Day Avg</span><span class="sc-val orb" id="sAvg" style="color:var(--cyan)">0.00</span><svg class="sparkline" viewBox="0 0 120 40" preserveAspectRatio="none" style="width:100%;height:40px;margin-bottom:4px"><polyline id="spark" fill="none" stroke="var(--cyan)" stroke-width="1.5" stroke-linecap="round" points="0,20 20,20"/><circle id="sparkEnd" cx="120" cy="20" r="3" fill="var(--cyan)"/></svg></div>
+    <div class="card stat-card"><span class="sc-icon">🌿</span><span class="sc-micro">Zero-Emission</span><span class="sc-val orb" id="sZero" style="color:var(--green-signal)">0</span><div class="leaves-box" id="leavesBox"></div></div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+    <div class="card chart-card">
+      <div class="ch-hdr"><h3 class="ch-title">Weekly Emissions</h3><span class="trend-pill tp-good" id="trendBadge">↘ Improving</span></div>
+      <div style="position:relative;height:240px">
+        <div class="y-labels" id="yLabels" style="position:absolute;left:0;top:0;bottom:28px;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none"></div>
+        <div class="bar-grid" id="barGrid" style="position:absolute;left:32px;right:0;top:0;bottom:28px;pointer-events:none"></div>
+        <div class="avg-line" id="avgLine" style="position:absolute;left:32px;right:0"><span>Avg 13.5</span></div>
+        <div class="bars-area" id="barsArea" style="position:absolute;left:32px;right:0;top:0;bottom:0;display:flex;align-items:flex-end;padding-bottom:28px"></div>
+      </div>
+    </div>
+    <div class="card chart-card" style="display:flex;flex-direction:column">
+      <h3 class="ch-title" style="margin-bottom:14px">Category Split</h3>
+      <div class="donut-wrap" style="flex:1;position:relative">
+        <canvas id="donutCanvas" style="max-height:180px"></canvas>
+        <div class="donut-center"><div class="donut-total orb" id="dTotal">0.00</div><div class="donut-lbl micro" style="margin:0">TOTAL CO₂</div></div>
+      </div>
+      <div class="donut-legend" id="dLeg"></div>
+    </div>
+  </div>
+
+  <!-- BADGES -->
+  <div class="badges-sec">
+    <div class="badges-hdr"><h3>Achievements</h3><span class="badges-cnt mono" id="bCnt">0/6 UNLOCKED</span></div>
+    <div class="badges-row" id="badgesRow"></div>
+  </div>
+</section>
+
+<!-- ═══ CALCULATOR ═══ -->
+<section class="tab" id="tab-calculator"><div class="stagger">
+  <h2 style="font-size:22px;margin-bottom:20px;font-family:'Space Grotesk'">Carbon Calculator</h2>
+  <div class="calc-layout">
+    <div class="card calc-panel">
+      <div class="pill-tabs" id="cPills">
+        <div class="pill-slider" id="cSlider"></div>
+        <button class="pill-btn active" data-cat="transport">🚗 Transport</button>
+        <button class="pill-btn" data-cat="food">🍽️ Food</button>
+        <button class="pill-btn" data-cat="home">🏠 Home</button>
+        <button class="pill-btn" data-cat="shopping">🛍️ Shop</button>
+      </div>
+      <div class="act-grid" id="actGrid"></div>
+      <div class="inp-wrap"><input type="number" class="inp" id="qtyInp" placeholder=" " min="0" step="any"><label class="inp-lbl" id="qtyLbl">Select an activity</label><span class="inp-unit mono" id="qtyUnit"></span></div>
+      <div class="live-prev mono" id="livePrev">&nbsp;</div>
+      <button class="btn-p" id="btnAdd" style="width:100%">Add to Log</button>
+    </div>
+    <div class="card calc-panel" style="border-left:3px solid var(--border-dim);display:flex;flex-direction:column">
+      <div class="log-hdr"><h3>Today's Log <span class="cnt-pill" id="logCnt">0</span></h3><button class="btn-g" id="btnClr">Clear All</button></div>
+      <div class="log-list" id="logList">
+        <div class="empty-log"><span class="el-icon">📡</span><div class="el-title">Mission log is empty.</div><div class="el-sub" style="color:var(--text-muted);justify-content:center">Select an activity to begin <span class="el-arrow">→</span></div></div>
+      </div>
+      <div class="log-total"><span class="micro" style="color:var(--text-muted)">TOTAL TODAY</span><div class="lt-num orb" id="ltNum" style="color:var(--cyan)">0.00</div><div class="lt-cmp mono" id="ltCmp" style="color:var(--green-signal)">13.5 kg below global average</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ═══ INSIGHTS ═══ -->
+<section class="tab" id="tab-insights"><div class="stagger">
+  <div class="card ai-hero" id="aiHero">
+    <svg class="earth-svg" width="64" height="64" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#00D4FF" stroke-width="1.5" opacity=".6"/><ellipse cx="32" cy="32" rx="14" ry="28" stroke="#00D4FF" stroke-width="1" opacity=".4"/><ellipse cx="32" cy="32" rx="28" ry="8" stroke="#40E8FF" stroke-width="1" opacity=".4"/><ellipse cx="32" cy="32" rx="28" ry="16" stroke="#0097B8" stroke-width=".8" opacity=".3"/></svg>
+    <h2>Mission Analysis</h2>
+    <p>AI-powered carbon intelligence — Gemini analyzes your mission log securely on the server.</p>
+    <button class="btn-p" id="btnAI" aria-label="Launch AI carbon footprint analysis">⚡ LAUNCH ANALYSIS</button>
+  </div>
+  <div class="card ai-load" id="aiLoad">
+    <div class="ai-load-bar"><div class="ai-load-fill" id="aiPbar"></div></div>
+    <div class="ai-load-txt" id="aiLoadTxt">Parsing mission log...</div>
+  </div>
+  <div class="ai-empty" id="aiEmpty" style="display:none"><div style="font-size:48px;margin-bottom:12px">📡</div><p>Log activities in the Calculator first, then return for AI analysis.</p></div>
+  <div class="ai-results" id="aiRes" style="display:none">
+    <div class="card ai-r-card"><div class="air-accent" style="background:var(--green-signal)"></div><h3>🌟 Strengths</h3><p id="aiPos"></p></div>
+    <div class="card ai-r-card"><div class="air-accent" style="background:var(--magenta)"></div><h3>⚠️ Focus Area</h3><p id="aiImp"></p></div>
+    <div class="card ai-r-card"><div class="air-accent" style="background:var(--gold)"></div><h3>🎯 Action Protocol</h3><div id="aiActs"></div></div>
+    <div class="card ai-r-card grade-box"><h3 style="justify-content:center">📊 Carbon Grade</h3><div class="giant-grade orb" id="aiGrade" style="color:var(--cyan)">—</div><p id="aiSum" style="margin-top:10px;font:400 12px 'JetBrains Mono',monospace;color:var(--text-secondary)"></p></div>
+    <div style="grid-column:1/-1;text-align:center;margin-top:10px"><button class="btn-s" id="btnRegen">Regenerate Analysis</button></div>
+  </div>
+</div></section>
+
+<!-- ═══ TIPS ═══ -->
+<section class="tab" id="tab-tips"><div class="stagger">
+  <div class="tips-hdr">
+    <div><h2>Reduction Protocol</h2><p style="color:var(--text-secondary);font-size:13px;margin-top:4px">Adopt habits to lower your footprint.</p></div>
+    <div class="ring-wrap">
+      <div style="text-align:right"><div class="ring-lbl" id="ringLbl">0/12</div><div class="ring-sub">ADOPTED</div></div>
+      <svg class="ring-svg" viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="16"/><circle class="ring-fill" id="ringFill" cx="18" cy="18" r="16"/></svg>
+    </div>
+  </div>
+  <div class="pill-tabs" id="tPills" style="margin-bottom:20px">
+    <div class="pill-slider" id="tSlider"></div>
+    <button class="pill-btn active" data-filter="all">All</button>
+    <button class="pill-btn" data-filter="transport">Transport</button>
+    <button class="pill-btn" data-filter="food">Food</button>
+    <button class="pill-btn" data-filter="home">Home</button>
+    <button class="pill-btn" data-filter="shopping">Shopping</button>
+  </div>
+  <div class="tips-grid" id="tipsGrid"></div>
+</div></section>
+
+<!-- ═══ LEARN ═══ -->
+<section class="tab" id="tab-learn"><div class="learn-sec stagger">
+  <div class="card learn-block scroll-anim">
+    <h2>🌎 What is a Carbon Footprint?</h2>
+    <p>A carbon footprint is the total greenhouse gases generated by our actions. The global average is <strong>4.8 tonnes per year</strong> (~13.5 kg/day). To limit warming to 1.5°C, we must cut emissions to under 2 tonnes per person by 2050.</p>
+    <div class="infographic">
+      <div class="inf-item"><span class="inf-ic">🏠</span><span class="inf-lb">Home</span></div><span class="inf-arr">→</span>
+      <div class="inf-item"><span class="inf-ic">🏭</span><span class="inf-lb">Industry</span></div><span class="inf-arr">→</span>
+      <div class="inf-item"><span class="inf-ic">💨</span><span class="inf-lb">CO₂</span></div><span class="inf-arr">→</span>
+      <div class="inf-item"><span class="inf-ic">🌡️</span><span class="inf-lb">Warming</span></div>
+    </div>
+  </div>
+  <div class="card learn-block scroll-anim">
+    <h2>⚡ Why Does It Matter?</h2>
+    <div class="learn-stats">
+      <div class="l-stat"><span class="s-ic">🌡️</span><div class="s-num orb" data-cu="1.2" style="color:var(--magenta)">0</div><span class="s-desc mono">°C warmer since pre-industrial</span></div>
+      <div class="l-stat"><span class="s-ic">💨</span><div class="s-num orb" data-cu="4.8" style="color:var(--gold)">0</div><span class="s-desc mono">tonnes avg CO₂/person/yr</span></div>
+      <div class="l-stat"><span class="s-ic">🌊</span><div class="s-num orb" data-cu="3.6" style="color:var(--amber)">0</div><span class="s-desc mono">mm/yr sea level rise</span></div>
+    </div>
+  </div>
+  <div class="card learn-block scroll-anim">
+    <h2>🔄 Carbon Equivalents</h2>
+    <p style="color:var(--text-secondary)">Enter your daily CO₂ to see real-world equivalents.</p>
+    <div class="conv-wrap">
+      <label style="display:block;text-align:center;font:600 10px 'Space Grotesk',sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px">kg CO₂</label>
+      <div class="inp-wrap" style="max-width:220px;margin:0 auto">
+        <input type="number" class="inp" id="convInp" placeholder="Enter kg CO₂" value="13.5" min="0" step="any" style="text-align:center;padding:14px 16px;font-size:20px">
+      </div>
+    </div>
+    <div class="equiv-grid">
+      <div class="card eq-card"><span class="eq-ic">🌳</span><span class="eq-approx mono">≈</span><span class="eq-val orb" id="eqTree">0.62</span><span class="eq-label mono">trees/year</span></div>
+      <div class="card eq-card"><span class="eq-ic">🚗</span><span class="eq-approx mono">≈</span><span class="eq-val orb" id="eqCar">84</span><span class="eq-label mono">km driven</span></div>
+      <div class="card eq-card"><span class="eq-ic">💡</span><span class="eq-approx mono">≈</span><span class="eq-val orb" id="eqLed">3749</span><span class="eq-label mono">LED hours</span></div>
+      <div class="card eq-card"><span class="eq-ic">📱</span><span class="eq-approx mono">≈</span><span class="eq-val orb" id="eqPhone">4500</span><span class="eq-label mono">phone charges</span></div>
+      <div class="card eq-card"><span class="eq-ic">🏠</span><span class="eq-approx mono">≈</span><span class="eq-val orb" id="eqAC">16.5</span><span class="eq-label mono">AC hours</span></div>
+    </div>
+  </div>
+  <div class="card learn-block scroll-anim">
+    <h2>🌐 Global Comparison (Annual)</h2>
+    <div class="g-bars">
+      <div class="g-row"><div class="g-lbl">USA</div><div class="g-track"><div class="g-fill" data-w="100" style="background:var(--magenta)"><span>14.9t</span></div></div></div>
+      <div class="g-row"><div class="g-lbl">Global</div><div class="g-track"><div class="g-fill" data-w="32.2" style="background:var(--amber)"><span>4.8t</span></div></div></div>
+      <div class="g-row"><div class="g-lbl">India</div><div class="g-track"><div class="g-fill" data-w="12.7" style="background:var(--green-signal)"><span style="color:#000">1.9t</span></div></div></div>
+      <div class="g-row" style="margin-top:6px"><div class="g-lbl" style="color:var(--cyan)">📍 You</div><div class="g-track" style="border:1px solid var(--border-mid)"><div class="g-fill" id="paceBar" style="background:var(--cyan)"><span id="paceVal" style="color:#000">0t</span></div></div></div>
+    </div>
+  </div>
+</div></section>
+
+</main>
+</div><!-- /app -->
+
+<script src="app.js" defer></script>
+</body>
+</html>

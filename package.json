@@ -1,0 +1,28 @@
+{
+  "name": "carbonwise",
+  "version": "1.0.0",
+  "description": "Carbon Footprint Awareness Platform — PromptWars Virtual Challenge 3",
+  "main": "app.js",
+  "scripts": {
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
+    "lint": "echo 'Add ESLint for linting support'"
+  },
+  "keywords": [
+    "carbon-footprint",
+    "sustainability",
+    "climate",
+    "gemini",
+    "ai",
+    "paris-agreement"
+  ],
+  "author": "Sandeep Reddy",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^30.4.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
